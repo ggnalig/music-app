@@ -102,8 +102,8 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-start max-xl:p-24 max-md:p-18 max-sm:p-4">
-      <div className="w-2/5">
+    <main className="flex min-h-screen flex-col items-center justify-start">
+      <div className="w-full md:w-3/4 xl:w-2/5">
         <div className="divide-y divide-slate-100">
           <Nav>
             <NavItem href="/" isActive={pathname === '/'}>Top Artists</NavItem>
