@@ -1,25 +1,24 @@
 "use client"
 
-import useSWR from "swr";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { useDebounce } from "@uidotdev/usehooks";
 
 import { Nav } from "@/components/nav";
-import { NavItem } from "@/components/nav-item";
 import { List } from "@/components/list";
-import { ListItem } from "@/components/list-item/list-item";
+import { NavItem } from "@/components/nav-item";
 import { SearchBar } from "@/components/search-bar";
+import { ListItem } from "@/components/list-item/list-item";
 
-import { IArtist } from "@/types/artists";
+import { ITrack } from "@/types/tracks";
 
-import { useGetTopArtists } from "@/services/useGetTopArtists";
-import { useDebounce } from "@uidotdev/usehooks";
-import { convertNumber } from "@/helper/number-converter";
 import { fetchData } from "@/services/fetchData";
+import { useGetTopTracks } from "@/services/useGetTopTracks";
+import { convertNumber } from "@/helper/number-converter";
 
 export type TActiveTab = 'artists' | 'tracks';
 
-export default function Home() {
+export default function TopTracks() {
   const pathname = usePathname()
   const [limit, setLimit] = useState(10);
   const [loading, setLoading] = useState(false)
@@ -27,7 +26,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState<any>("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300)
 
-  const { flattenedArtists, totalItem, loadingTopArtists, isValidatingTopArtists, sizeTopArtists, errrorTopArtists,setTopArtistSize } = useGetTopArtists(limit);
+  const { flattenedTracks, totalItem, loadingTopTracks, isValidatingTopTracks, sizeTopTracks, errrorTopTracks, setTopTracksize } = useGetTopTracks(limit)
 
   useEffect(() => {
     const searchData = async () => {
@@ -39,7 +38,7 @@ export default function Home() {
       }
 
       setLoading(false);
-      setSearchResult(results?.results?.artistmatches?.artist);
+      setSearchResult(results?.results?.trackmatches?.track);
     };
 
     searchData();
@@ -57,7 +56,8 @@ export default function Home() {
     e.target.focus();
   }
 
-  if (loadingTopArtists) {
+
+  if (loadingTopTracks) {
     return (
     <div className="flex min-h-screen flex-col items-center justify-between p-24">
       <h1>loading...</h1>
@@ -65,8 +65,8 @@ export default function Home() {
     )
   }
 
-  if (errrorTopArtists) {
-    return <h1>Error!! {JSON.stringify(errrorTopArtists.message)}</h1>
+  if (errrorTopTracks ) {
+    return <h1>Error!! {JSON.stringify(errrorTopTracks.message)}</h1>
   }
 
   const renderList = () => {
@@ -77,7 +77,7 @@ export default function Home() {
             <h6>Searching...</h6>
           ):(
             <List> 
-              {searchResult?.map((data: IArtist) => (
+              {searchResult?.map((data: ITrack) => (
                 <ListItem key={data?.mbid} data={data} />
               ))}
             </List>
@@ -88,13 +88,13 @@ export default function Home() {
       return(
         <>
           <List>
-            {flattenedArtists?.map((data: IArtist) => (
+            {flattenedTracks?.map((data: ITrack) => (
               <ListItem key={data?.mbid} data={data} />
             ))}
           </List>
           <div className="flex flex-col">
-            <h6 className="justify-self-end self-end">menampilkan {flattenedArtists?.length} dari {convertNumber(totalItem)} data </h6>
-            {isValidatingTopArtists ? <h6>Loading...</h6> : <button className="justify-self-evenly" onClick={() => setTopArtistSize(sizeTopArtists + 1)}>tampilkan lebih banyak</button>}
+            <h6 className="justify-self-end self-end">menampilkan {flattenedTracks?.length} dari {convertNumber(totalItem)} data </h6>
+            {isValidatingTopTracks ? <h6>Loading...</h6> : <button className="justify-self-evenly" onClick={() => setTopTracksize(sizeTopTracks + 1)}>tampilkan lebih banyak</button>}
           </div>
         </>
       )
